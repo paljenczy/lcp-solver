@@ -1,0 +1,6 @@
+# Open math questions
+
+* Should we aim to solve a mixed LCP (MLCP) problem? By MLCP, I mean allowing equality constraints, such as a supply-demand equilibrium, within the problem. Or should we force the user to transform an MLCP into an LCP by explicitly introducing a slack variable? 
+
+* How is an LCP different from a quadratic programming (QP) problem? How do QP algos compare to LCP algos? Are there any important applications where a QP algo is insufficient, but an (M)LCP algo is fine?
+

@@ -1,0 +1,15 @@
+*~
+*.log
+*.aux
+*.toc
+*.out
+*.snm
+*.backup
+*.nav
+*.blg
+*.bbl
+*.pdf
+*.ps
+temp/
+dl/
+
