@@ -3,9 +3,10 @@
 * All text is markdown-formatted. GFM syntax is fine.
 * All communication that leaves a trace is in English.
 * We use a shared repo model (push access to both developers).
-* All work is done in branches.
+* All coding work is done in separate branches.
 * Branches are merged after code review, initiated with a pull request.
-* Nothing is merged into the default branch without unit tests.
+* No code is merged into the default branch without unit tests.
 * Merging into the default branch cannot be carried out by the pull request's initiator.
 * Separate math notes with LaTeX formatting are required for all math-related code. Name of the tex file is referenced in the code comments.
+* It's fine to commit math notes, documentation, Q&A, and similar stuff to the default branch directly.
 
