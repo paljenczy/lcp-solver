@@ -2,19 +2,19 @@
 # This is a learning exercise, so don't expect nice code :)
 
 
-function lemke(M::Array{Float64,2}, q::Array{Float64,1}; maxiter::Int64=1000)
+function lemke(M::AbstractArray{Float64,2}, q::Array{Float64,1}; maxiter::Integer=1000)
     const n = length(q)
     d = 1.0 * (q.<0)
     if sum(d) == 0.0
         println("Trivial solution exists.")
         return zeros((n, 1))
     end
-    A::Array{Float64,2} = [copy(M) spzeros(n) d]
+    A::AbstractArray{Float64,2} = [copy(M) spzeros(n) d]
     b::Array{Float64,1} = copy(q)
-    basic::Array{Int64,1} = [n+1:2n]
-    enter::Int64 = 2n+1
-    pivot::Int64 = indmin(b)
-    leave::Int64 = basic[pivot]
+    basic::Array{Integer,1} = [n+1:2n]
+    enter::Integer = 2n+1
+    pivot::Integer = indmin(b)
+    leave::Integer = basic[pivot]
     pivot!(A, b, basic, pivot, enter)
     for iter in 1:maxiter
         if leave==2n+1
@@ -49,7 +49,7 @@ end
 
 
 
-function cplm(i::Int64, n::Int64)
+function cplm(i::Integer, n::Integer)
     if i <= n
         i+n
     else
@@ -59,7 +59,7 @@ end
 
 
 
-function pivot!(A::Array{Float64,2}, b::Array{Float64,1}, basic::Array{Int64,1}, pivot::Int64, enter::Int64)
+function pivot!(A::AbstractArray{Float64,2}, b::Array{Float64,1}, basic::Array{Integer,1}, pivot::Integer, enter::Integer)
     const d = -A[pivot, enter]
     const v = b[pivot] / d
     A[pivot, basic[pivot]] = -1.0
