@@ -4,7 +4,7 @@
 
 function lemke(M::AbstractArray{Float64,2}, q::Array{Float64,1}; maxiter::Integer=1000)
     const n = length(q)
-    d = 1.0 * (q.<0)
+    d = sparse(1.0 * (q.<0))
     if sum(d) == 0.0
         println("Trivial solution exists.")
         return zeros((n, 1))
@@ -63,14 +63,20 @@ function pivot!(A::AbstractArray{Float64,2}, b::Array{Float64,1}, basic::Array{I
     const d = -A[pivot, enter]
     const v = b[pivot] / d
     A[pivot, basic[pivot]] = -1.0
-    A[pivot, :] /= d
+    const Ip, Jp, Vp = findnz(A[pivot, :])
+    for j in Jp
+        A[pivot, j] /= d
+    end
     A[pivot, enter] = 0.0
-    for i in 1:length(basic)
-        if A[i, enter] != 0.0
-            A[i, :] += A[i, enter] * A[pivot, :]
-            b[i] += A[i, enter] * v
-            A[i, enter] = 0.0
+    const Ie, Je, Ve = findnz(A[:, enter])
+    for j in Jp
+        for i in Ie
+            A[i, j] += A[i, enter] * A[pivot, j]
         end
+    end
+    for i in Ie
+        b[i] += A[i, enter] * v
+        A[i, enter] = 0.0
     end
     b[pivot] = v
     basic[pivot] = enter
