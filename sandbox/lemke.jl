@@ -15,7 +15,7 @@ function lemke(M::AbstractArray{Float64,2}, q::Array{Float64,1}; maxiter::Intege
     enter::Integer = 2n+1
     pivot::Integer = indmin(b)
     leave::Integer = basic[pivot]
-    pivot!(A, b, basic, pivot, enter)
+    @time pivot!(A, b, basic, pivot, enter)
     for iter in 1:maxiter
         if leave==2n+1
             println("I've found a solution!")
@@ -41,7 +41,7 @@ function lemke(M::AbstractArray{Float64,2}, q::Array{Float64,1}; maxiter::Intege
             end
         end
         leave = basic[pivot]
-        pivot!(A, b, basic, pivot, enter)
+        @time pivot!(A, b, basic, pivot, enter)
     end
 
     println("Maximum number of iterations reached!")
@@ -49,7 +49,7 @@ end
 
 
 
-function cplm(i::Integer, n::Integer)
+function cplm(i :: Integer, n :: Integer)
     if i <= n
         i+n
     else
@@ -59,26 +59,35 @@ end
 
 
 
-function pivot!(A::AbstractArray{Float64,2}, b::Array{Float64,1}, basic::Array{Integer,1}, pivot::Integer, enter::Integer)
-    const d = -A[pivot, enter]
-    const v = b[pivot] / d
+function pivot!(A :: AbstractArray{Float64,2}, b :: Array{Float64,1}, basic :: Array{Integer,1}, pivot :: Integer, enter :: Integer)
+    const n :: Int32 = length(b)
+    const d :: Float64 = -A[pivot, enter]
+    const v :: Float64 = b[pivot] / d
     A[pivot, basic[pivot]] = -1.0
-    const Ip, Jp, Vp = findnz(A[pivot, :])
-    for j in Jp
-        A[pivot, j] /= d
-    end
     A[pivot, enter] = 0.0
-    const Ie, Je, Ve = findnz(A[:, enter])
-    for j in Jp
-        for i in Ie
-            A[i, j] += A[i, enter] * A[pivot, j]
-        end
+    I, J, V = findnz(A)
+    const allpivcols :: Array{Int32,1} = [1:2n+1][bitunpack(slice(A, pivot, :) .!= 0.0)]
+    const allpivrows :: Array{Int32,1} = [1:n][bitunpack(slice(A, :, enter) .!= 0.0)]
+    const pivotrow::Array{Bool,1} = I.==pivot
+    const entercol::Array{Bool,1} = J.==enter
+    const numpivrows :: Integer = length(allpivrows)
+    const numpivcols :: Integer = length(allpivcols)
+    V[pivotrow] /= d    
+    I2 :: Array{Int32,1} = zeros(numpivrows * numpivcols)
+    J2 :: Array{Int32,1} = zeros(numpivrows * numpivcols)
+    V2 :: Array{Float64,1} = zeros(numpivrows * numpivcols)
+    for j in 1:numpivcols, i in 1:numpivrows
+        ix = (j - 1) * numpivrows + i
+        I2[ix] = allpivrows[i]
+        J2[ix] = allpivcols[j]
+        V2[ix] = A[i, enter] * A[pivot, j]
     end
-    for i in Ie
+    for i in allpivrows
         b[i] += A[i, enter] * v
-        A[i, enter] = 0.0
     end
+    V[entercol] = 0.0
     b[pivot] = v
     basic[pivot] = enter
+    A = sparse([I; I2], [J; J2], [V; V2])
 end
 
