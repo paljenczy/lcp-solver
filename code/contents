@@ -1,3 +1,5 @@
 # Contents of the code directory
 
+- lemke.jl: First attempt at coding a simple lemke algorithm with a zero starting vector
+- problemio.jl: Text-based import/export functions for lcp problems
 
